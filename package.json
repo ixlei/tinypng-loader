@@ -1,16 +1,27 @@
 {
-    "name": "tinypng-loader",
-    "version": "0.0.1",
-    "description": "tinypng loader for webpack",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "keywords": [
-        "tinypng",
-        "loader",
-        "webpack"
-    ],
-    "author": "ixlei",
-    "license": "ISC"
+  "name": "tinypng-loader",
+  "version": "0.0.1",
+  "description": "tinypng loader for webpack",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "tinypng",
+    "loader",
+    "webpack"
+  ],
+  "author": "ixlei",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ixlei/tinypng-loader.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ixlei/tinypng-loader/issues"
+  },
+  "homepage": "https://github.com/ixlei/tinypng-loader#readme",
+  "dependencies": {
+    "tinify": "^1.5.0"
+  }
 }
