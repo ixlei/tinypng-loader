@@ -31,9 +31,27 @@ module.exports = function(content) {
     }
 
     content = fs.readFileSync(this.resourcePath);
+    console.log(content.length)
 
-    tinify.fromBuffer(content).toBuffer(function(err, resultData) {
-        if (err) return callback(err);
-        callback(null, resultData);
-    });
+    function requestCompress() {
+        tinify.fromBuffer(content).toBuffer(function(err, resultData) {
+            if (err && err.status >= 400 && err.status < 500) {
+                if (selectedKeys.length == keys.length) {
+                    return callback(null, content);
+                }
+                do {
+                    let key = keys[parseInt(Math.random() * keys.length)];
+                } while (selectedKeys.indexOf(key) == -1)
+                selectedKeys.push(key);
+                tinify.key = key;
+                requestCompress();
+            }
+            if (err) return callback(null, content);
+            console.log(resultData.length)
+            callback(null, resultData);
+        });
+    }
+
+    requestCompress();
+
 }
