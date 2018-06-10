@@ -2,11 +2,11 @@
 
 const tinify = require('tinify');
 const loaderUtils = require('loader-utils');
+const fs = require('fs');
 
 module.exports = function(content) {
     this.cacheable && this.cacheable();
     const callback = this.async();
-
     const selectedKeys = [];
 
     const options = loaderUtils.getOptions(this);
@@ -30,9 +30,10 @@ module.exports = function(content) {
         tinify.key = key;
     }
 
-    content = Buffer.from(content, 'utf8');
-    tinify.fromBuffer(sourceData).toBuffer(function(err, resultData) {
+    content = fs.readFileSync(this.resourcePath);
+
+    tinify.fromBuffer(content).toBuffer(function(err, resultData) {
         if (err) return callback(err);
-        callback(resultData.toString('utf8'));
+        callback(null, resultData);
     });
 }
