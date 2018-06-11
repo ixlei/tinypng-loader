@@ -13,14 +13,14 @@ const config = {
     },
     module: {
         rules: [{
-            test: /\.png$/,
+            test: /\.(jpeg|png)$/,
             use: [
                 'url-loader?limit=10000',
                 'img-loader',
                 {
                     loader: '../index.js',
                     options: {
-                        keys: ['qARMmY5YJUcjiOzGl86TJuD2Vv2vmBcH0']
+                        keys: ['qARMmY5YJUcjiOzGl86TJuD2Vv2vmBcH00']
                     }
                 }
             ]

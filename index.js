@@ -1,12 +1,16 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
 const tinify = require('tinify');
 const loaderUtils = require('loader-utils');
-const fs = require('fs');
+
 
 module.exports = function(content) {
-    this.cacheable && this.cacheable();
     const callback = this.async();
+
+    this.cacheable && this.cacheable();
+
     const selectedKeys = [];
 
     const options = loaderUtils.getOptions(this);
@@ -31,7 +35,6 @@ module.exports = function(content) {
     }
 
     content = fs.readFileSync(this.resourcePath);
-    console.log(content.length)
 
     function requestCompress() {
         tinify.fromBuffer(content).toBuffer(function(err, resultData) {
@@ -54,4 +57,11 @@ module.exports = function(content) {
 
     requestCompress();
 
+}
+
+module.exports.pitch = function(remainingRequest) {
+    let isPng = /\.png$/.test(this.resourcePath);
+    if (!isPng) {
+        return fs.readFileSync(this.resourcePath);
+    }
 }
