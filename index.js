@@ -35,6 +35,8 @@ module.exports = function(content) {
     }
 
     content = fs.readFileSync(this.resourcePath);
+    let resPath = this.resourcePath;
+    console.log(this.resourcePath, content.length);
 
     function requestCompress() {
         tinify.fromBuffer(content).toBuffer(function(err, resultData) {
@@ -49,8 +51,9 @@ module.exports = function(content) {
                 tinify.key = key;
                 requestCompress();
             }
+            console.log(err)
             if (err) return callback(null, content);
-            console.log(resultData.length)
+            console.log(resPath, resultData.length)
             callback(null, resultData);
         });
     }
