@@ -2,18 +2,28 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const mkdirp = require('mkdirp');
 const tinify = require('tinify');
 const loaderUtils = require('loader-utils');
 
-
 module.exports = function(content) {
     const callback = this.async();
+    const options = loaderUtils.getOptions(this);
+    let hashName, filePath;
+    content = fs.readFileSync(this.resourcePath);
+
+    if (options.cachePath) {
+        hashName = crypto.createHash('md5').update(content).digest("hex");
+        filePath = path.join(options.cachePath, `${hashName}.png`);
+        if (fs.existsSync(filePath)) {
+            console.log('cache hit');
+            return fs.readFileSync(filePath);
+        }
+    }
 
     this.cacheable && this.cacheable();
-
     const selectedKeys = [];
-
-    const options = loaderUtils.getOptions(this);
 
     const { keys, proxy } = options;
 
@@ -34,7 +44,6 @@ module.exports = function(content) {
         tinify.key = key;
     }
 
-    content = fs.readFileSync(this.resourcePath);
     let resPath = this.resourcePath;
     console.log(this.resourcePath, content.length);
 
@@ -51,10 +60,17 @@ module.exports = function(content) {
                 tinify.key = key;
                 requestCompress();
             }
-            console.log(err)
+            console.error(err)
             if (err) return callback(null, content);
             console.log(resPath, resultData.length)
-            callback(null, resultData);
+            if (options.cachePath) {
+                mkdirp(options.cachePath, (err) => {
+                    if (err) {
+                        return callback(null, resultData);
+                    }
+                    fs.writeFileSync(filePath, resultData);
+                })
+            }
         });
     }
 

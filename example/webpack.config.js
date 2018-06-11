@@ -20,6 +20,7 @@ const config = {
                 {
                     loader: '../index.js',
                     options: {
+                        cachePath: path.join(__dirname, '../dev'),
                         keys: ['qARMmY5YJUcjiOzGl86TJuD2Vv2vmBcH00']
                     }
                 }
