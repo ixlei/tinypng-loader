@@ -1,6 +1,6 @@
 {
     "name": "tinypng-webpack-loader",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "description": "tinypng loader for webpack",
     "main": "index.js",
     "scripts": {
