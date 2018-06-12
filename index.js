@@ -12,16 +12,20 @@ module.exports = function(content) {
     const options = loaderUtils.getOptions(this);
     let hashName, filePath;
     content = fs.readFileSync(this.resourcePath);
-
     if (options.cachePath) {
         hashName = crypto.createHash('md5').update(content).digest("hex");
         filePath = path.join(options.cachePath, `${hashName}.png`);
         if (fs.existsSync(filePath)) {
-            console.log('cache hit');
-            return fs.readFileSync(filePath);
+            console.log(filePath, ' cache hit');
+            fs.readFile(filePath, (err, data) => {
+                if (err) {
+                    return callback(err);
+                }
+                callback(null, data);
+            })
+            return;
         }
     }
-
     this.cacheable && this.cacheable();
     const selectedKeys = [];
 
@@ -45,10 +49,16 @@ module.exports = function(content) {
     }
 
     let resPath = this.resourcePath;
-    console.log(this.resourcePath, content.length);
+    console.log('before', this.resourcePath, content.length);
+    let timeout = false,
+        timer = null;
 
     function requestCompress() {
         tinify.fromBuffer(content).toBuffer(function(err, resultData) {
+            if (timeout) {
+                return;
+            }
+            clearTimeout(timer);
             if (err && err.status >= 400 && err.status < 500) {
                 if (selectedKeys.length == keys.length) {
                     return callback(null, content);
@@ -61,14 +71,16 @@ module.exports = function(content) {
                 requestCompress();
             }
             if (err) return callback(null, content);
-            console.log(resPath, resultData.length)
+            console.log('after', resPath, resultData.length)
             if (options.cachePath) {
                 mkdirp(options.cachePath, (err) => {
+                    console.log('mkdir err', err);
                     if (err) {
                         return callback(null, resultData);
                     }
-                    callback(null, resultData);
-                    fs.writeFileSync(filePath, resultData);
+                    fs.writeFile(filePath, resultData, () => {
+                        callback(null, resultData);
+                    });
                 })
             } else {
                 callback(null, resultData);
@@ -78,6 +90,11 @@ module.exports = function(content) {
 
     requestCompress();
 
+    timer = setTimeout(() => {
+        console.log(resPath, ' timeout');
+        timeout = true;
+        callback(null, content);
+    }, 6000);
 }
 
 module.exports.pitch = function(remainingRequest) {
