@@ -60,7 +60,6 @@ module.exports = function(content) {
                 tinify.key = key;
                 requestCompress();
             }
-            console.error(err)
             if (err) return callback(null, content);
             console.log(resPath, resultData.length)
             if (options.cachePath) {
@@ -68,8 +67,11 @@ module.exports = function(content) {
                     if (err) {
                         return callback(null, resultData);
                     }
+                    callback(null, resultData);
                     fs.writeFileSync(filePath, resultData);
                 })
+            } else {
+                callback(null, resultData);
             }
         });
     }
